@@ -1,0 +1,24 @@
+#fire {
+  width: 25vw;
+  height: 40vh;
+  background-image: url("https://media.giphy.com/media/i8Q3nWuVVQpGw/giphy.gif");
+  background-size: cover;
+  background-position: center;
+  border: solid black 2px;
+  position: absolute;
+  left: 37.5%;
+
+}
+
+h2 {
+  color: blue;
+  text-align: center;
+  font-size: 2.5vw;
+}
+
+h1 {
+  color: grey;
+  text-align: center;
+  font-family: 'Barrio', cursive;
+  font-size: 5vw;
+}

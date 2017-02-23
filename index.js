@@ -40,9 +40,11 @@ app.post('/v1/gifs', function(req, res){
     });
 });
 
-app.get('*', function(req, res){
-    res.send('<html><head></head><body><h1>404 page not found: ' + req.url +'</h1>' +req.veryImportantInformation + '</body></html>');
-    res.end();
-})
+// app.get('*', function(req, res){
+    // res.send('<html><head></head><body><h1>406 page not found:) ' + req.url +'</h1>' +req.veryImportantInformation + '</body></html>');
+    // res.end();
+// })
+
+app.use(express.static('public'));
 
 app.listen(3000);
