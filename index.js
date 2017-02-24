@@ -1,21 +1,24 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var morgan = require('morgan');
-var gifs = [{
-    keyword: 'funny cat',
-    url: 'http://.....',
-    description: "A funny cat on the beach."
-},
-{
-    keyword: 'bear',
-    url: 'http://.....',
-    description: "A bear in the bitterroot that is very friendly."
-},
-]
+// var gifsRoutes = require("./routes/gifs");
+// var routes = require("");
+var uriUtil = require('mongodb-uri');
+var mongoose = require('mongoose');
+var Gifs = require('./models/gifs');
+mongoose.Promise = global.Promise;
+
+var mongodbUri = process.env.MONGODB_URI || 'mongodb://localhost/gifs';
+var mongooseUri = uriUtil.formatMongoose(mongodbUri);
+var options = {
+  server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
+  replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }
+};
+mongoose.connect(mongooseUri, options);
 
 var app = express();
 
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 app.use(morgan('dev'));
 
 app.use(function(req, res, next){
@@ -25,26 +28,42 @@ app.use(function(req, res, next){
 
 app.get('/v1/gifs/search', function(req, res){
     var query = req.query.q;
-    res.json(gifs.filter(function(gif){
-        return gif.keyword === query;
-    }));
+    Gifs.find({keyword:query}, function(err, foundgifs){
+      if(err){
+        next(err);
+      } else {
+        res.json(foundgifs)
+      }
+    });
 })
 
-
 app.post('/v1/gifs', function(req, res){
-    gifs.push(req.body.gif);
-    return res.json({
-        success: true,
-        gif: req.body.gif,
-        totalGifs: gifs.length
+    var aGif = new Gifs();
+    aGif.keyword = req.body.gif.keyword
+    aGif.url = req.body.gif.url
+    aGif.description = req.body.gif.description
+    aGif.save(function(err, aGif){
+      if(err) {
+        res.send(err)
+      } else {
+        res.json(aGif)
+      }
     });
 });
 
-// app.get('*', function(req, res){
-    // res.send('<html><head></head><body><h1>406 page not found:) ' + req.url +'</h1>' +req.veryImportantInformation + '</body></html>');
-    // res.end();
-// })
-
 app.use(express.static('public'));
+
+app.set('view engine', 'ejs');
+
+app.get('/', function(req, res){
+  var gifs = [];
+  Gifs.find(function(err, foundgifs){
+    if(err){
+      next(err);
+    } else {
+      res.render('index', {gifs: foundgifs});
+    }
+  });
+});
 
 app.listen(3000);

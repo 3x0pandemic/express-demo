@@ -22,3 +22,21 @@ h1 {
   font-family: 'Barrio', cursive;
   font-size: 5vw;
 }
+
+#app{
+  display: flex;
+  justify-content: center;
+  align-content: space-around;
+  flex-wrap: wrap;
+  margin:25vw;
+}
+
+@media(min-width: 1000px) {
+  #app{
+  display: flex;
+  align-content: space-around;
+  flex-wrap: nowrap;
+  margin:10vw
+
+  }
+}
